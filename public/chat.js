@@ -1,7 +1,7 @@
 $(function(){
 	var d = new Date();
 	//create a socket
-	var socket = io('http://localhost:3000');
+	var socket = io('https://chatroomforstudents.herokuapp.com');
 	//connection event handler : message coming in
 	socket.on('message from server', function (msg) {
 		// body...
