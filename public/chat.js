@@ -8,7 +8,7 @@ $(function(){
 	name=names[Math.floor(Math.random() * names.length)];
 	var d = new Date();
 	//create a socket
-	var socket = io(pathdev);
+	var socket = io(pathserv);
 	//connection event handler : message coming in
 	var rec_str="<h1>Tim</h1><> • 51 min</time></div></div></div>" ;
 	socket.on('message from server', function (msg) {
