@@ -1,3 +1,5 @@
+var pathserv='https://chatroomforstudents.herokuapp.com';
+var pathdev= 'http://localhost:3000';
 $(function(){
 	var colors = ['red', 'green', 'navy', 'orange', 'grey','black'];
 	var names = ['itachi', 'iroh', 'gryffindor', 'albus', 'snape', 'luffy'];
@@ -6,7 +8,7 @@ $(function(){
 	name=names[Math.floor(Math.random() * names.length)];
 	var d = new Date();
 	//create a socket
-	var socket = io('http://localhost:3000');
+	var socket = io(pathdev);
 	//connection event handler : message coming in
 	var rec_str="<h1>Tim</h1><> • 51 min</time></div></div></div>" ;
 	socket.on('message from server', function (msg) {
