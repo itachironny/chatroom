@@ -1,0 +1,243 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Chatroomfortwo</title>
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+        <style>
+
+
+          /* label color */
+     .input-field label {
+       color: #ef9a9a;
+     }
+     /* label focus color */
+     .input-field input[type=text]:focus + label {
+       color: #ffebee;
+     }
+     /* icon color */
+     .input-field .prefix {
+       color: #ef9a9a;
+     }
+     /* icon focus color */
+     .input-field .prefix.active {
+       color: #ffebee;
+     }
+     /* label underline color */
+     .input-field input[type=text] {
+       border-bottom: 1px solid #ef9a9a;
+       box-shadow: 0 1px 0 0 #ef9a9a;
+     }
+     /* label underline focus color */
+     .input-field input[type=text]:focus {
+       border-bottom: 1px solid #ffebee;
+       box-shadow: 0 1px 0 0 #ffebee;
+     }
+
+
+      * { box-sizing: border-box; }
+      .container#body {height:100vh; }
+      #nav{ height: 55px; padding: 10px;}
+      .nav-text{padding-left: 10px; }
+      .conversation-area{ overflow: scroll; padding: 15px;}
+      .keypad-area{min-height: 70px; padding: 15px;}
+      .message-line{padding-top: 5px; padding-bottom: 5px; display: flex;}
+      .message-line.msg-right{justify-content: flex-end; display: -webkit-flex;}
+      .message-line:nth-of-type(1){display: none;}
+      .message-line:nth-of-type(2){display: none;}
+
+      .message-box{max-width: 80%; border-radius: 10px; padding: 10px;}
+
+      /* .message-box{max-width: 80%; border-radius: 10px; padding: 10px;background-color:#efe9dc;
+                  display: flex; display: -webkit-flex; justify-content: space-between;}
+      .msg-left .sender-img{order: 1; -webkit-order: 1;}
+      .msg-right .sender-img{order: 2; -webkit-order: 2;}
+      .msg-left .msg{order: 2; -webkit-order: 2;}
+      .msg-right .msg{order: 1; -webkit-order: 1;}
+      .sender-img{padding-right: 5px;} */
+      .msg{padding: 3px;}
+      /* .time-div{justify-content: flex-end;} */
+
+      </style>
+
+    </head>
+
+
+    <body class="blue-grey darken-4">
+      <div id="body" class="container col s10 offset-s1 m6 offset-m3 red lighten-3">
+        <!-- topbar begins -->
+        <div id="nav" class="col s12 red darken-2 z-depth-2 valign-wrapper black-text">
+          <span class="nav-text"><i class="material-icons">messenger</i></span>
+          <span class="nav-text">ROUNAK ADHIKARY</span>
+        </div>
+        <!-- topbar ends -->
+
+        <div class="conversation-area" id="convo_area">
+          <div class="message-line msg-right">
+            <div class="message-box z-depth-1 teal darken-3 white-text">
+              <div class="sender-name">
+                [''''']
+              </div>
+              <div class="msg">
+                <p class="msg-txt">bbbb</p>
+              </div>
+              <!-- <div class="time-div"> </div> -->
+            </div>
+          </div>
+
+          <div class="message-line msg-left">
+            <div class="message-box z-depth-1 teal darken-3 white-text">
+              <div class="sender-name">
+                [''''']
+              </div>
+              <div class="msg">
+                <p class="msg-txt">bbbbbb</p>
+              </div>
+              <!-- <div class="time-div"> </div> -->
+            </div>
+          </div>
+
+        </div>
+
+        <div class="keypad-area red darken-2" id="keypad_area">
+           <form class="col m8">
+             <div class="input-field">
+                <i class="material-icons prefix">mode_edit</i>
+                <input id="textarea" type="text" data-length="300"></input>
+                <label for="textarea">Type Message here...</label>
+             </div>
+           </form>
+
+           <button class="waves-effect waves-light btn teal darken-4">
+             <i class="material-icons right">send</i>
+           </button>
+
+        </div>
+
+      </div>
+
+      <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- socket io -->
+  <script src="/socket.io/socket.io.js"></script>
+       <!-- <script type="text/javascript" src="chat3.js"></script> -->
+
+      <script type="text/javascript">
+
+      var port = 3080;
+      var pathserv='https://chatroomforstudents.herokuapp.com';
+      var pathdev= 'http://localhost:' + port ;
+      var socket;
+
+        var name = "HOLLLLLAAAA";
+        var scrollable_height = 0;
+        var convo;
+        var d = new Date();
+
+        var box_change = function(){
+          var cont = $("#body");
+          var nav = $("#nav");
+          var keypad = $("#keypad_area");
+          convo.height(cont.height()-nav.outerHeight(true)-keypad.outerHeight(true)-30);
+        };
+        var timer = (time) => {
+          var time_node = $("<p/>").addClass("right-align");
+          time_node.text(time);
+          return time_node;
+        };
+        var msgr = (type, msg) => {
+          var newn = convo.data(type).clone(true);
+          newn.find(".sender-name").text(msg['username']);
+          newn.find(".msg-txt").text(msg['message']);
+          newn.find(".msg-txt").after(timer(msg['time']));
+          return newn;
+        }
+        var btn_click = function(){
+          // var newn = convo.data("sent_msg").clone(true);
+          var text = $("#textarea").val();
+
+          socket.emit('user connection','connected');
+      		var msg= {
+      			'message': text,
+      			'username': name,
+      			'time': d.toLocaleTimeString()
+      		};
+      		socket.emit('message from client',msg);
+
+          // newn.find(".msg-txt").text(text);
+          // newn.find(".msg").append(timer);
+          var newn = msgr("sent_msg",msg);
+          convo.append(newn);
+          scrollable_height+= newn.outerHeight();
+
+          if(scrollable_height>convo.height()) convo.scrollTop(scrollable_height - convo.height());
+
+          $("#textarea").val("");
+          // M.textareaAutoResize($('#textarea1'));
+          $("#textarea").focus();
+        };
+
+        $(function(){
+
+          socket = io(pathdev);
+        	socket.on('message from server', function (msg){
+
+			/* var msg= {
+				'message': text,
+				'username': name,
+				'time': d.toLocaleTimeString()
+			}; */
+
+          	// var newn = $("#convo_area").data("recvd_msg").clone(true);
+          	// var text = msg['message'];
+          	// newn.find(".msg-txt").text(text);
+          	// newn.find(".msg").append(msg['time']);
+            var newn = msgr("recvd_msg",msg);
+          	convo.append(newn);
+          	scrollable_height+= newn.outerHeight();
+
+          	if(scrollable_height>convo.height()) convo.scrollTop(scrollable_height - convo.height());
+
+        	});
+          $(window).resize(box_change);
+          $(".btn").click(btn_click);
+          $("form").submit(function(e){
+            btn_click();
+            $("#textarea").blur();
+            $("#textarea").focus();
+            e.preventDefault();
+          });
+        });
+        $(function(){
+
+            var right=$('.msg-right').first();
+            var left=$('.msg-left').first();
+            convo = $("#convo_area");
+
+            var msg_left= left.clone(true);
+            var msg_right= right.clone(true);
+            // console.log(msg_left);
+            // console.log(msg_right);
+            convo.data("sent_msg" , msg_left );
+            convo.data("recvd_msg" , msg_right );
+
+        });
+
+        $(()=>{
+          name = "<%= username %>";
+        	box_change();
+          $('input, textarea').characterCounter();
+        });
+
+      </script>
+
+    </body>
+  </html>
