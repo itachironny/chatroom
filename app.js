@@ -50,7 +50,10 @@ var server= app.listen(PORT, ()=>{console.log('Listening on '+ PORT );});   //ht
 //server.listen(3080,()=>{console.log('connected at 3000')});
 
 //make a socket
-io=iolib(server);
+io=iolib(server,{
+  serveClient: (config.env === 'production') ? false : true,
+  path: '/socket.io'
+});
 io.set('origins', pathserv );
 io.on('connection', (socket)=>{
 	console.log('new user connected/n');
