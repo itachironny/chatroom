@@ -51,7 +51,7 @@ var server= app.listen(PORT, ()=>{console.log('Listening on '+ PORT );});   //ht
 
 //make a socket
 io=iolib(server,{
-  serveClient: true,
+  serveClient: false,
   path: '/socket.io'
 });
 io.set('origins', pathserv );
